@@ -1,0 +1,30 @@
+.filter((d) => d.class === "missing")
+              .forEach((detection) => {
+                const {
+                  x,
+                  y,
+                  width: bboxWidth,
+                  height: bboxHeight,
+                  confidence,
+                } = detection;
+                ctx.beginPath();
+                ctx.rect(
+                  x - bboxWidth / 2,
+                  y - bboxHeight / 2,
+                  bboxWidth,
+                  bboxHeight
+                );
+                ctx.lineWidth = 10; // Thicker border
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.font = "bold 82px Arial"; // Thicker and larger text
+                ctx.fillStyle = "red";
+                ctx.textAlign = "center";
+                ctx.fillText(
+                  `${Math.round(confidence * 100)}%`,
+                  x,
+                  y - bboxHeight / 2 - 5
+                );
+              });

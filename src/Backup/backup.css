@@ -1,0 +1,152 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+  }
+  
+  .container {
+    margin-top: 50px;
+  }
+  
+  .upload-section {
+    padding: 50px;
+    background-color: #f8f9fa;
+    text-align: center;
+  }
+  
+  .upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .upload-area {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  .upload-text {
+    text-align: center;
+  }
+  
+  .upload-icon {
+    font-size: 50px;
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+  
+  .browse-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .file-list {
+    margin-top: 20px;
+    width: 100%;
+  }
+  
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+    margin-bottom: 10px;
+  }
+  
+  .file-name {
+    font-weight: bold;
+  }
+  
+  .file-size {
+    color: #555;
+  }
+  
+  .result-section {
+    margin-top: 50px;
+  }
+  
+  .comparison-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .custom-card {
+    flex: 1;
+    margin: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-card .card-header {
+    background-color: #007bff;
+    color: white;
+    font-size: 18px;
+    padding: 10px;
+  }
+  
+  .custom-card-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .custom-img {
+    max-width: 100%;
+    object-fit: contain;
+  }
+  
+  /* Navigation bar styles */
+  .navbar {
+    background-color: #007bff;
+  }
+  
+  .navbar-brand,
+  .navbar-text {
+    color: white !important;
+  }
+  
+  .navbar-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .btn-outline-light {
+    color: white;
+    border: 1px solid white;
+  }
+  
+  .spaceven{
+  
+    margin-top: 30px;
+    margin-bottom: 20px;
+    margin-inline: 20px;
+    background-image: linear-gradient(to right, rgb(0 98 236 / 56%), rgb(49 113 135));
+    padding-right: inherit;
+  }
+  
