@@ -6,9 +6,9 @@ import React, {
   useRef,
 } from "react";
 import axios from "axios";
-import ARViewer from "../component/ARViewer";
+import * as XLSX from "xlsx"; // Ensure you have xlsx installed: npm install xlsx
 import "./FileUpload.css";
-
+import logo from "./pepsiproj.png";
 const loadImageBase64 = (file: File): Promise<string | ArrayBuffer | null> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -23,6 +23,8 @@ const FileUpload: React.FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [detections, setDetections] = useState<any[]>([]);
+  const [superMarket, setSuperMarket] = useState<string>("");
+  const [date, setDate] = useState<string>("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +40,10 @@ const FileUpload: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!file) return;
+    if (!file || !superMarket || !date) {
+      alert("Please fill all fields before uploading.");
+      return;
+    }
 
     try {
       setUploading(true);
@@ -56,7 +61,29 @@ const FileUpload: React.FC = () => {
       });
       console.log(response.data);
       setDetections(response.data.predictions);
-      alert("File uploaded successfully");
+
+      // Process results to create an entry for the Excel file
+      const imageID = response.data.image_id;
+      const emptyShelvesCount = response.data.predictions.filter(
+        (d: { class: string }) => d.class === "missing"
+      ).length;
+
+      // Create Excel file
+      const worksheet = XLSX.utils.json_to_sheet([
+        {
+          "Super Market": superMarket,
+          Date: date,
+          "Image ID": imageID,
+          "Number of Empty Shelves": emptyShelvesCount,
+        },
+      ]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Results");
+      XLSX.writeFile(workbook, "Results.xlsx");
+
+      alert("File uploaded and results saved successfully");
+      // Scroll to the result section
+      resultRef.current?.scrollIntoView({ behavior: "smooth" });
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Error uploading file");
@@ -96,15 +123,15 @@ const FileUpload: React.FC = () => {
                   bboxHeight
                 );
                 ctx.lineWidth = 4; // Thicker border
-                ctx.strokeStyle = "red";
+                ctx.strokeStyle = "violet";
                 ctx.stroke();
                 ctx.closePath();
 
-                ctx.font = "bold 22px Arial"; // Thicker and smaller text
-                ctx.fillStyle = "red";
+                ctx.font = "bold 18px Arial"; // Thicker and smaller text
+                ctx.fillStyle = "white";
                 ctx.textAlign = "center";
-                ctx.shadowColor = "white";
-                ctx.shadowBlur = 1;
+                ctx.shadowColor = "black";
+                ctx.shadowBlur = 5;
                 ctx.fillText(
                   `${Math.round(confidence * 100)}%`,
                   x,
@@ -120,13 +147,49 @@ const FileUpload: React.FC = () => {
   return (
     <div>
       <nav className="navbar">
-        <div className="navbar-brand">Your Brand</div>
-        <div className="navbar-center">DPA Flash</div>
+        <div className="navbar-brand">
+          <img src={logo} />
+        </div>
+        <div className="navbar-center">
+          {" "}
+          <h5>Digital Products and Applications</h5>
+        </div>
         <div className="navbar-signin">Sign In</div>
       </nav>
-      <div className="container mt-5 upload-section">
+      <div className="container mt-5 upload-section ">
+        <h2 style={{ marginBottom: 20 }}>
+          Upload Image for Empty Shelf Detection
+        </h2>
         <div className="upload-container">
           <form onSubmit={handleSubmit}>
+            <div className="input-fields-row">
+              <div className="input-field-container">
+                <label htmlFor="superMarket" className="form-label">
+                  Location:
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="superMarket"
+                  value={superMarket}
+                  onChange={(e) => setSuperMarket(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="input-field-container">
+                <label htmlFor="date" className="form-label">
+                  Time:
+                </label>
+                <input
+                  type="datetime-local"
+                  className="form-control"
+                  id="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
             <div className="mb-3">
               <label htmlFor="formFile" className="form-label">
                 Drag and Drop file or Browse:
@@ -158,7 +221,7 @@ const FileUpload: React.FC = () => {
           </form>
         </div>
       </div>
-      <div className="container mt-5 result-section">
+      <div className="container mt-5 result-section" ref={resultRef}>
         <div className="custom-card">
           <div className="card-header">Original Image</div>
           <div className="card-body d-flex justify-content-center align-items-center custom-card-body img-thumbnail custom-img">
@@ -168,7 +231,7 @@ const FileUpload: React.FC = () => {
           </div>
         </div>
 
-        <div className="spaceven">
+        <div className="">
           <br />
         </div>
         <div className="custom-card">

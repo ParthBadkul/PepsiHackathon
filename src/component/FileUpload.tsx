@@ -6,8 +6,9 @@ import React, {
   useRef,
 } from "react";
 import axios from "axios";
-import * as XLSX from "xlsx"; // Ensure you have xlsx installed: npm install xlsx
+import * as XLSX from "xlsx";
 import "./FileUpload.css";
+import logo from "./pepsiproj.png";
 
 const loadImageBase64 = (file: File): Promise<string | ArrayBuffer | null> => {
   return new Promise((resolve, reject) => {
@@ -63,7 +64,7 @@ const FileUpload: React.FC = () => {
       setDetections(response.data.predictions);
 
       // Process results to create an entry for the Excel file
-      const imageID = response.data.image_id;
+      const imageID = response.data.predictions.detection_id;
       const emptyShelvesCount = response.data.predictions.filter(
         (d: { class: string }) => d.class === "missing"
       ).length;
@@ -144,15 +145,34 @@ const FileUpload: React.FC = () => {
     }
   }, [detections]);
 
+  const handleARClick = () => {
+    if (preview && detections.length > 0) {
+      const arPageUrl = `/ar-visualization?image=${encodeURIComponent(
+        preview
+      )}&detections=${encodeURIComponent(JSON.stringify(detections))}`;
+      window.open(arPageUrl, "_blank");
+    } else {
+      alert(
+        "No detections available for AR visualization or image is not available."
+      );
+    }
+  };
+
   return (
     <div>
       <nav className="navbar">
-        <div className="navbar-brand">Your Brand</div>
-        <div className="navbar-center">DPA Flash</div>
+        <div className="navbar-brand">
+          <img src={logo} alt="Logo" />
+        </div>
+        <div className="navbar-center">
+          <h5>Digital Products and Applications</h5>
+        </div>
         <div className="navbar-signin">Sign In</div>
       </nav>
       <div className="container mt-5 upload-section">
-        <h2>Upload Image for Empty Shelf Detection</h2>
+        <h2 style={{ marginBottom: 20 }}>
+          Upload Image for Empty Shelf Detection
+        </h2>
         <div className="upload-container">
           <form onSubmit={handleSubmit}>
             <div className="input-fields-row">
@@ -184,7 +204,7 @@ const FileUpload: React.FC = () => {
               </div>
             </div>
             <div className="mb-3">
-              <label htmlFor="formFile" className="form-label">
+              <label htmlFor="formFile" className="form-label spacialtext">
                 Drag and Drop file or Browse:
               </label>
               <input
@@ -204,13 +224,24 @@ const FileUpload: React.FC = () => {
                 />
               </div>
             )}
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={uploading}
-            >
-              {uploading ? "Uploading..." : "Upload"}
-            </button>
+            <div className="button-container">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={uploading}
+              >
+                {uploading ? "Uploading..." : "Upload"}
+              </button>
+              {detections.length > 0 && (
+                <button
+                  type="button"
+                  className="btn btn-success mt-3"
+                  onClick={handleARClick}
+                >
+                  Visualize in AR
+                </button>
+              )}
+            </div>
           </form>
         </div>
       </div>
@@ -219,12 +250,12 @@ const FileUpload: React.FC = () => {
           <div className="card-header">Original Image</div>
           <div className="card-body d-flex justify-content-center align-items-center custom-card-body img-thumbnail custom-img">
             {preview && (
-              <img src={preview} alt="Original" className="card-body " />
+              <img src={preview} alt="Original" className="card-body" />
             )}
           </div>
         </div>
 
-        <div className="spaceven">
+        <div className="">
           <br />
         </div>
         <div className="custom-card">
